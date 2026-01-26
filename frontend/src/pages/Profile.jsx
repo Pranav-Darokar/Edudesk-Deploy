@@ -1,0 +1,218 @@
+import React, { useState, useEffect } from 'react';
+import Layout from '../components/Layout';
+import api from '../services/api';
+import { UserCircleIcon, PhoneIcon, MapPinIcon, BriefcaseIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
+
+const Profile = () => {
+    const [profile, setProfile] = useState({
+        name: '',
+        email: '',
+        role: '',
+        bio: '',
+        phoneNumber: '',
+        address: ''
+    });
+    const [isEditing, setIsEditing] = useState(false);
+    const [exists, setExists] = useState(true);
+    const [loading, setLoading] = useState(true);
+    const [message, setMessage] = useState('');
+
+    useEffect(() => {
+        fetchProfile();
+    }, []);
+
+    const fetchProfile = async () => {
+        try {
+            const response = await api.get('/profile/me');
+            setProfile(response.data);
+            setExists(true);
+        } catch (error) {
+            if (error.response && error.response.status === 404) {
+                setExists(false);
+                // Pre-fill some info from local storage or auth if possible
+                // for now keep it empty as the component already does
+            }
+            console.error("Error fetching profile:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setProfile(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setMessage('');
+        try {
+            let response;
+            if (exists) {
+                response = await api.patch('/profile/me', {
+                    bio: profile.bio,
+                    phoneNumber: profile.phoneNumber,
+                    address: profile.address
+                });
+            } else {
+                response = await api.post('/profile', {
+                    bio: profile.bio,
+                    phoneNumber: profile.phoneNumber,
+                    address: profile.address
+                });
+                setExists(true);
+            }
+            setProfile(prev => ({ ...prev, ...response.data }));
+            setIsEditing(false);
+            setMessage('Profile saved successfully!');
+            setTimeout(() => setMessage(''), 3000);
+        } catch (error) {
+            console.error("Error saving profile:", error);
+            setMessage('Failed to save profile.');
+        }
+    };
+
+    if (loading) {
+        return (
+            <Layout>
+                <div className="flex justify-center items-center h-full">
+                    <p className="text-gray-500">Loading profile...</p>
+                </div>
+            </Layout>
+        );
+    }
+
+    return (
+        <Layout>
+            <div className="max-w-4xl mx-auto">
+                <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
+                    <div className="h-32 bg-gradient-to-r from-indigo-500 to-purple-600"></div>
+                    <div className="px-8 pb-8">
+                        <div className="relative flex justify-between items-end -mt-12 mb-6">
+                            <div className="bg-white dark:bg-gray-800 p-2 rounded-full ring-4 ring-white dark:ring-gray-800 shadow-md">
+                                <div className="h-24 w-24 bg-gray-200 rounded-full flex items-center justify-center text-gray-500">
+                                    <UserCircleIcon className="h-16 w-16" />
+                                </div>
+                            </div>
+                            {!isEditing && (
+                                <button
+                                    onClick={() => setIsEditing(true)}
+                                    className="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition"
+                                >
+                                    {exists ? 'Edit Profile' : 'Complete Profile'}
+                                </button>
+                            )}
+                        </div>
+
+                        {message && (
+                            <div className={`mb-6 p-4 rounded-lg flex items-center ${message.includes('success') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                                {message.includes('success') && <CheckCircleIcon className="h-5 w-5 mr-2" />}
+                                {message}
+                            </div>
+                        )}
+
+                        <div className="mb-8">
+                            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{profile.name || 'User Name'}</h1>
+                            <p className="text-gray-500 dark:text-gray-400">{profile.email || 'user@example.com'}</p>
+                            <span className="inline-block mt-2 px-3 py-1 text-xs font-semibold text-indigo-700 bg-indigo-100 rounded-full">
+                                {profile.role || 'ROLE'}
+                            </span>
+                        </div>
+
+                        {isEditing ? (
+                            <form onSubmit={handleSubmit} className="space-y-6">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Bio</label>
+                                    <textarea
+                                        name="bio"
+                                        rows="3"
+                                        value={profile.bio || ''}
+                                        onChange={handleChange}
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm"
+                                        placeholder="Tell us about yourself..."
+                                    />
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Phone Number</label>
+                                        <div className="mt-1 relative rounded-md shadow-sm">
+                                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                <PhoneIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                                            </div>
+                                            <input
+                                                type="text"
+                                                name="phoneNumber"
+                                                value={profile.phoneNumber || ''}
+                                                onChange={handleChange}
+                                                className="block w-full pl-10 rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm"
+                                                placeholder="+1 (555) 000-0000"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Address</label>
+                                        <div className="mt-1 relative rounded-md shadow-sm">
+                                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                <MapPinIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                                            </div>
+                                            <input
+                                                type="text"
+                                                name="address"
+                                                value={profile.address || ''}
+                                                onChange={handleChange}
+                                                className="block w-full pl-10 rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm"
+                                                placeholder="123 Main St, City, Country"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="flex justify-end space-x-3 pt-4 border-t border-gray-100 dark:border-gray-700">
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsEditing(false)}
+                                        className="px-4 py-2 bg-white text-gray-700 text-sm font-medium rounded-lg border border-gray-300 hover:bg-gray-50 transition"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition"
+                                    >
+                                        Save Changes
+                                    </button>
+                                </div>
+                            </form>
+                        ) : (
+                            <div className="space-y-6">
+                                <div>
+                                    <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">About</h3>
+                                    <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                                        {profile.bio || "No bio added yet."}
+                                    </p>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="flex items-start space-x-3">
+                                        <PhoneIcon className="h-6 w-6 text-gray-400 mt-0.5" />
+                                        <div>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">Contact</p>
+                                            <p className="text-sm text-gray-500 dark:text-gray-400">{profile.phoneNumber || "Not provided"}</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-start space-x-3">
+                                        <MapPinIcon className="h-6 w-6 text-gray-400 mt-0.5" />
+                                        <div>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">Location</p>
+                                            <p className="text-sm text-gray-500 dark:text-gray-400">{profile.address || "Not provided"}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+        </Layout>
+    );
+};
+
+export default Profile;
