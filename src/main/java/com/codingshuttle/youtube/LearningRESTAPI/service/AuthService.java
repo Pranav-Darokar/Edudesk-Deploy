@@ -78,8 +78,12 @@ public class AuthService {
                                 .build();
                 otpRepository.save(verificationOTP);
 
-                emailService.sendEmail(savedUser.getEmail(), "Verify your email",
-                                "Your verification code is: " + otp);
+                try {
+                        emailService.sendEmail(savedUser.getEmail(), "Verify your email",
+                                        "Your verification code is: " + otp);
+                } catch (Exception e) {
+                        log.error("Failed to send verification email to {}: {}", savedUser.getEmail(), e.getMessage());
+                }
 
                 log.info("========================================");
                 log.info("VERIFICATION OTP FOR {}: {}", savedUser.getEmail(), otp);
@@ -145,8 +149,12 @@ public class AuthService {
                 tokenRepository.save(resetToken);
 
                 String resetLink = frontendUrl + "/reset-password?token=" + token;
-                emailService.sendEmail(email, "Password Reset Request",
-                                "Click the link below to reset your password:\n" + resetLink);
+                try {
+                        emailService.sendEmail(email, "Password Reset Request",
+                                        "Click the link below to reset your password:\n" + resetLink);
+                } catch (Exception e) {
+                        log.error("Failed to send password reset email to {}: {}", email, e.getMessage());
+                }
         }
 
         public void resetPassword(ResetPasswordRequest request) {

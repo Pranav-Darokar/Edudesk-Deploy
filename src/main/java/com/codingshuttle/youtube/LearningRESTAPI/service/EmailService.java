@@ -11,6 +11,7 @@ public class EmailService {
 
     private final JavaMailSender mailSender;
 
+    @org.springframework.scheduling.annotation.Async
     public void sendEmail(String to, String subject, String body) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("sms-noreply@example.com");
