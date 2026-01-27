@@ -21,13 +21,18 @@ This guide explains how to deploy the EduDesk application (Spring Boot + React +
     - `SPRING_DATASOURCE_PASSWORD`: `${{Postgres.PGPASSWORD}}`
     - `APP_FRONTEND_URL`: The URL of your frontend (e.g., `https://edudesk-frontend.railway.app`)
 
-## 3. Deploy the Frontend (React/Vite)
-1.  Click **New** > **GitHub Repo** and select your EduDesk repository.
-2.  In the **Settings** tab, change the **Root Directory** to `frontend`.
-3.  In the **Variables** tab, add:
-    - `VITE_API_BASE_URL`: The URL of your backend + `/api` (e.g., `https://edudesk-backend.railway.app/api`)
+## 3. Deploy the Frontend (React/Vite) to Vercel
+1.  Go to [Vercel](https://vercel.com/) and click **Add New** > **Project**.
+2.  Import your GitHub repository.
+3.  Configure the project:
+    - **Root Directory**: `frontend`
+    - **Build Command**: `npm run build`
+    - **Output Directory**: `dist`
+4.  Add **Environment Variables**:
+    - `VITE_API_BASE_URL`: The URL of your backend + `/api` (e.g., `https://edudesk-backend.railway.app/api`).
+5.  Click **Deploy**.
 
 ## 4. Final Steps
-1.  Railway will automatically detect the build commands (`mvn package` for backend and `npm run build` for frontend).
-2.  Ensure your `pom.xml` has the `spring-boot-maven-plugin`.
-3.  If Maven build fails, check if you need to set `MAVEN_OPTS` or `JAVA_VERSION` (21).
+1.  Ensure your backend's `APP_FRONTEND_URL` variable on Railway matches your Vercel deployment URL (e.g., `https://edudesk-frontend.vercel.app`).
+2.  Railway will handle the backend with the multi-stage `Dockerfile`.
+3.  Vercel will handle the frontend with the `vercel.json` for SPA routing.
