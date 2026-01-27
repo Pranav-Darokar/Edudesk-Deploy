@@ -18,8 +18,9 @@ const AdminAttendance = () => {
             ]);
 
             // Map students to attendance status
-            const mappedData = studentRes.data.map(student => {
-                const record = attRes.data.find(r => r.student.id === student.id);
+            const studentsList = studentRes.data.content || [];
+            const mappedData = studentsList.map(student => {
+                const record = (attRes.data || []).find(r => r.student && r.student.id === student.id);
                 return {
                     ...student,
                     present: record ? record.present : null,
@@ -28,7 +29,7 @@ const AdminAttendance = () => {
             });
 
             setAttendanceData(mappedData);
-            setStudents(studentRes.data);
+            setStudents(studentsList);
         } catch (error) {
             toast.error('Failed to load attendance data');
         }
@@ -62,8 +63,8 @@ const AdminAttendance = () => {
             header: 'Status',
             render: (present) => (
                 <span className={`px-2 py-1 rounded-full text-xs font-semibold ${present === true ? 'bg-green-100 text-green-800' :
-                        present === false ? 'bg-red-100 text-red-800' :
-                            'bg-gray-100 text-gray-800'
+                    present === false ? 'bg-red-100 text-red-800' :
+                        'bg-gray-100 text-gray-800'
                     }`}>
                     {present === true ? 'Present' : present === false ? 'Absent' : 'Not Marked'}
                 </span>

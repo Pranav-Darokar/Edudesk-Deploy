@@ -121,6 +121,7 @@ const Students = () => {
                     data={students}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
+                    showEdit={isAdmin}
                     showDelete={isAdmin}
                 />
 

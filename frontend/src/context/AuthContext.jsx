@@ -44,17 +44,25 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const signup = async (email, password, name, role) => {
+    const signup = async (userData) => {
         try {
-            const response = await api.post('/auth/signup', { email, password, name, role });
-            const { token } = response.data;
-            localStorage.setItem('token', token);
-            setToken(token);
-            decodeAndSetUser(token);
+            const response = await api.post('/auth/signup', userData);
+            // No token returned yet, user needs to verify OTP
             return true;
         } catch (error) {
             console.error("Signup failed", error);
             const message = error.response?.data?.error || 'Signup failed';
+            throw new Error(message);
+        }
+    };
+
+    const verifyOtp = async (email, otp) => {
+        try {
+            await api.post('/auth/verify-otp', { email, otp });
+            return true;
+        } catch (error) {
+            console.error("OTP verification failed", error);
+            const message = error.response?.data?.error || 'Verification failed';
             throw new Error(message);
         }
     };
@@ -66,7 +74,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, token, login, signup, logout, loading }}>
+        <AuthContext.Provider value={{ user, token, login, signup, verifyOtp, logout, loading }}>
             {children}
         </AuthContext.Provider>
     );

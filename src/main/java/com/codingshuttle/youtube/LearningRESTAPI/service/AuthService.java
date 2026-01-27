@@ -14,6 +14,8 @@ import com.codingshuttle.youtube.LearningRESTAPI.entity.PasswordResetToken;
 import com.codingshuttle.youtube.LearningRESTAPI.repository.PasswordResetTokenRepository;
 import com.codingshuttle.youtube.LearningRESTAPI.repository.StudentRepository;
 import com.codingshuttle.youtube.LearningRESTAPI.repository.TeacherRepository;
+import com.codingshuttle.youtube.LearningRESTAPI.repository.VerificationOTPRepository;
+import com.codingshuttle.youtube.LearningRESTAPI.entity.VerificationOTP;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,12 +28,16 @@ import java.util.UUID;
 @lombok.extern.slf4j.Slf4j
 public class AuthService {
 
+        @org.springframework.beans.factory.annotation.Value("${app.frontend.url}")
+        private String frontendUrl;
+
         private final UserRepository repository;
         private final PasswordEncoder passwordEncoder;
         private final JwtService jwtService;
         private final AuthenticationManager authenticationManager;
         private final EmailService emailService;
         private final PasswordResetTokenRepository tokenRepository;
+        private final VerificationOTPRepository otpRepository;
         private final StudentRepository studentRepository;
         private final TeacherRepository teacherRepository;
 
@@ -42,13 +48,42 @@ public class AuthService {
                         throw new RuntimeException("Email already registered");
                 }
 
+                java.time.LocalDate dob = null;
+                if (request.getDob() != null && !request.getDob().isEmpty()) {
+                        dob = java.time.LocalDate.parse(request.getDob());
+                }
+
                 var user = User.builder()
-                                .name(request.getName())
+                                .firstName(request.getFirstName())
+                                .lastName(request.getLastName())
                                 .email(request.getEmail())
+                                .phoneNumber(request.getPhoneNumber())
+                                .address(request.getAddress())
+                                .dob(dob)
                                 .password(passwordEncoder.encode(request.getPassword()))
-                                .role(request.getRole() != null ? request.getRole() : Role.STUDENT)
+                                .role(Role.STUDENT)
+                                .enabled(false) // Must verify email
                                 .build();
                 User savedUser = repository.save(user);
+
+                // Generate and send OTP
+                String otp = String.valueOf((int) (Math.random() * 900000) + 100000);
+                Calendar cal = Calendar.getInstance();
+                cal.add(Calendar.MINUTE, 10);
+
+                VerificationOTP verificationOTP = VerificationOTP.builder()
+                                .otp(otp)
+                                .user(savedUser)
+                                .expiryDate(cal.getTime())
+                                .build();
+                otpRepository.save(verificationOTP);
+
+                emailService.sendEmail(savedUser.getEmail(), "Verify your email",
+                                "Your verification code is: " + otp);
+
+                log.info("========================================");
+                log.info("VERIFICATION OTP FOR {}: {}", savedUser.getEmail(), otp);
+                log.info("========================================");
 
                 // Sync with management tables
                 if (savedUser.getRole() == Role.STUDENT) {
@@ -56,18 +91,27 @@ public class AuthService {
                         student.setName(savedUser.getName());
                         student.setEmail(savedUser.getEmail());
                         studentRepository.save(student);
-                } else if (savedUser.getRole() == Role.TEACHER) {
-                        com.codingshuttle.youtube.LearningRESTAPI.entity.Teacher teacher = new com.codingshuttle.youtube.LearningRESTAPI.entity.Teacher();
-                        teacher.setName(savedUser.getName());
-                        teacher.setEmail(savedUser.getEmail());
-                        teacherRepository.save(teacher);
                 }
 
-                log.info("User and profile saved with id: {}", savedUser.getId());
-                var jwtToken = jwtService.generateToken(savedUser);
+                log.info("User saved with id: {}. OTP sent.", savedUser.getId());
                 return AuthResponse.builder()
-                                .token(jwtToken)
+                                .token(null) // Don't return token until verified
                                 .build();
+        }
+
+        public void verifyOtp(String email, String otp) {
+                var otpEntity = otpRepository.findByOtpAndUser_Email(otp, email)
+                                .orElseThrow(() -> new RuntimeException("Invalid OTP or Email"));
+
+                if (otpEntity.isExpired()) {
+                        throw new RuntimeException("OTP expired");
+                }
+
+                User user = otpEntity.getUser();
+                user.setEnabled(true);
+                repository.save(user);
+
+                otpRepository.delete(otpEntity);
         }
 
         public AuthResponse login(AuthRequest request) {
@@ -100,7 +144,7 @@ public class AuthService {
 
                 tokenRepository.save(resetToken);
 
-                String resetLink = "http://localhost:5173/reset-password?token=" + token;
+                String resetLink = frontendUrl + "/reset-password?token=" + token;
                 emailService.sendEmail(email, "Password Reset Request",
                                 "Click the link below to reset your password:\n" + resetLink);
         }

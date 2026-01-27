@@ -51,10 +51,12 @@ public class ProfileControllerIT {
 
         // Create a test user
         User user = User.builder()
-                .name("Integration Test User")
+                .firstName("Integration Test")
+                .lastName("User")
                 .email("it@example.com")
                 .password(passwordEncoder.encode("password"))
                 .role(Role.STUDENT)
+                .enabled(true)
                 .build();
         userRepository.save(user);
 

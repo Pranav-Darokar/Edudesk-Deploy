@@ -27,7 +27,29 @@ public class User implements UserDetails {
     @Column(unique = true)
     private String email;
     private String password;
-    private String name;
+    private String firstName;
+    private String lastName;
+    private String phoneNumber;
+    private String address;
+    private java.time.LocalDate dob;
+
+    @Builder.Default
+    private boolean enabled = false;
+
+    public String getName() {
+        return (firstName != null ? firstName : "") + (lastName != null ? " " + lastName : "");
+    }
+
+    public void setName(String name) {
+        if (name != null && name.contains(" ")) {
+            String[] parts = name.split(" ", 2);
+            this.firstName = parts[0];
+            this.lastName = parts[1];
+        } else {
+            this.firstName = name;
+            this.lastName = "";
+        }
+    }
 
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -59,6 +81,6 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return enabled;
     }
 }

@@ -35,9 +35,11 @@ class ProfileServiceTest {
         MockitoAnnotations.openMocks(this);
         mockUser = User.builder()
                 .id(1L)
-                .name("Test User")
+                .firstName("Test")
+                .lastName("User")
                 .email("test@example.com")
                 .role(Role.STUDENT)
+                .enabled(true)
                 .build();
     }
 

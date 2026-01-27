@@ -15,6 +15,7 @@ import AdminReports from './pages/AdminReports';
 import AdminSystem from './pages/AdminSystem';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
+import VerifyOTP from './pages/VerifyOTP';
 import Profile from './pages/Profile';
 import { useAuth } from './context/AuthContext';
 
@@ -39,6 +40,7 @@ const App = () => {
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/verify-otp" element={<VerifyOTP />} />
       <Route path="/reset-password" element={<ResetPassword />} />
 
       <Route

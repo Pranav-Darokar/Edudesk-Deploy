@@ -22,6 +22,7 @@ public class StudentController {
     private final StudentService studentService;
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<StudentDto>> getStudent(Pageable pageable) {
         return ResponseEntity.ok(studentService.getAllStudents(pageable));
     }
@@ -45,12 +46,14 @@ public class StudentController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StudentDto> updateStudent(@PathVariable Long id,
             @RequestBody AddStudentRequestDto addStudentRequestDto) {
         return ResponseEntity.ok(studentService.updateStudent(id, addStudentRequestDto));
     }
 
     @PatchMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StudentDto> updatePartialStudent(@PathVariable Long id,
             @RequestBody Map<String, Object> updates) {
         return ResponseEntity.ok(studentService.updatePartialStudent(id, updates));

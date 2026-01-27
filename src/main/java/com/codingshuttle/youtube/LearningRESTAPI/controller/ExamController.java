@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.List;
 
 @RestController
@@ -22,11 +23,13 @@ public class ExamController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
     public ResponseEntity<Exam> scheduleExam(@RequestBody Exam exam) {
         return ResponseEntity.ok(examService.scheduleExam(exam));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
     public ResponseEntity<Void> deleteExam(@PathVariable Long id) {
         examService.deleteExam(id);
         return ResponseEntity.noContent().build();
@@ -38,6 +41,7 @@ public class ExamController {
     }
 
     @PostMapping("/{examId}/results/{studentId}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
     public ResponseEntity<ExamResult> recordResult(
             @PathVariable Long examId,
             @PathVariable Long studentId,
@@ -46,6 +50,7 @@ public class ExamController {
     }
 
     @PatchMapping("/{examId}/publish")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
     public ResponseEntity<Void> publishResults(@PathVariable Long examId) {
         examService.publishResults(examId);
         return ResponseEntity.ok().build();

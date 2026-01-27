@@ -41,4 +41,10 @@ public class AuthController {
         service.resetPassword(request);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/verify-otp")
+    public ResponseEntity<Void> verifyOtp(@RequestBody Map<String, String> request) {
+        service.verifyOtp(request.get("email"), request.get("otp"));
+        return ResponseEntity.ok().build();
+    }
 }

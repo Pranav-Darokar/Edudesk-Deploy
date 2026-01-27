@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.List;
 
 @RestController
@@ -22,11 +23,13 @@ public class FeesController {
     }
 
     @PostMapping("/structures")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
     public ResponseEntity<FeeStructure> createStructure(@RequestBody FeeStructure structure) {
         return ResponseEntity.ok(feesService.createFeeStructure(structure));
     }
 
     @DeleteMapping("/structures/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
     public ResponseEntity<Void> deleteStructure(@PathVariable Long id) {
         feesService.deleteFeeStructure(id);
         return ResponseEntity.noContent().build();
@@ -38,6 +41,7 @@ public class FeesController {
     }
 
     @PostMapping("/collect/{studentId}/{structureId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<FeePayment> collectPayment(
             @PathVariable Long studentId,
             @PathVariable Long structureId,

@@ -1,7 +1,7 @@
 import React from 'react';
 import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 
-const Table = ({ columns, data, onEdit, onDelete, actions = true, showDelete = true }) => {
+const Table = ({ columns, data, onEdit, onDelete, renderActions, actions = true, showDelete = true, showEdit = true }) => {
     return (
         <div className="overflow-x-auto rounded-lg shadow ring-1 ring-black ring-opacity-5">
             <table className="min-w-full divide-y divide-gray-300">
@@ -44,19 +44,27 @@ const Table = ({ columns, data, onEdit, onDelete, actions = true, showDelete = t
                                 {actions && (
                                     <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                                         <div className="flex justify-end space-x-2">
-                                            <button
-                                                onClick={() => onEdit(item)}
-                                                className="text-indigo-600 hover:text-indigo-900 p-1 rounded-full hover:bg-indigo-50"
-                                            >
-                                                <PencilIcon className="h-4 w-4" />
-                                            </button>
-                                            {showDelete && (
-                                                <button
-                                                    onClick={() => onDelete(item.id)}
-                                                    className="text-red-600 hover:text-red-900 p-1 rounded-full hover:bg-red-50"
-                                                >
-                                                    <TrashIcon className="h-4 w-4" />
-                                                </button>
+                                            {renderActions ? (
+                                                renderActions(item)
+                                            ) : (
+                                                <>
+                                                    {showEdit && (
+                                                        <button
+                                                            onClick={() => onEdit(item)}
+                                                            className="text-indigo-600 hover:text-indigo-900 p-1 rounded-full hover:bg-indigo-50"
+                                                        >
+                                                            <PencilIcon className="h-4 w-4" />
+                                                        </button>
+                                                    )}
+                                                    {showDelete && (
+                                                        <button
+                                                            onClick={() => onDelete(item.id)}
+                                                            className="text-red-600 hover:text-red-900 p-1 rounded-full hover:bg-red-50"
+                                                        >
+                                                            <TrashIcon className="h-4 w-4" />
+                                                        </button>
+                                                    )}
+                                                </>
                                             )}
                                         </div>
                                     </td>
