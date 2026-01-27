@@ -16,7 +16,8 @@ import {
     Cog6ToothIcon,
     SunIcon,
     MoonIcon,
-    UserCircleIcon
+    UserCircleIcon,
+    BookOpenIcon
 } from '@heroicons/react/24/outline';
 
 const Layout = ({ children }) => {
@@ -47,6 +48,7 @@ const Layout = ({ children }) => {
 
     if (user?.role === 'ADMIN') {
         navigation.push({ name: 'Manage Users', href: '/admin/users', icon: ShieldCheckIcon });
+        navigation.push({ name: 'Manage Courses', href: '/admin/courses', icon: BookOpenIcon });
         navigation.push({ name: 'Manage Fees', href: '/admin/fees', icon: CurrencyDollarIcon });
         navigation.push({ name: 'Manage Exams', href: '/admin/exams', icon: ClipboardDocumentCheckIcon });
         navigation.push({ name: 'Attendance', href: '/admin/attendance', icon: CalendarDaysIcon });

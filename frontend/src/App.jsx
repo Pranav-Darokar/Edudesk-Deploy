@@ -8,6 +8,7 @@ import Students from './pages/Students';
 import Teachers from './pages/Teachers';
 import Courses from './pages/Courses';
 import AdminUsers from './pages/AdminUsers';
+import AdminCourses from './pages/AdminCourses';
 import AdminFees from './pages/AdminFees';
 import AdminExams from './pages/AdminExams';
 import AdminAttendance from './pages/AdminAttendance';
@@ -56,6 +57,14 @@ const App = () => {
         element={
           <ProtectedRoute adminOnly>
             <AdminUsers />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/courses"
+        element={
+          <ProtectedRoute adminOnly>
+            <AdminCourses />
           </ProtectedRoute>
         }
       />
