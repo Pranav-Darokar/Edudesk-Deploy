@@ -62,11 +62,14 @@ public class AuthService {
                                 .dob(dob)
                                 .password(passwordEncoder.encode(request.getPassword()))
                                 .role(Role.STUDENT)
-                                .enabled(false) // Must verify email
+                                .enabled(true) // User is enabled immediately
                                 .build();
                 User savedUser = repository.save(user);
 
-                // Generate and send OTP
+                // Generate token immediately
+                var jwtToken = jwtService.generateToken(savedUser);
+
+                // Generate and send OTP (optional now, but keeping the logic for background)
                 String otp = String.valueOf((int) (Math.random() * 900000) + 100000);
                 Calendar cal = Calendar.getInstance();
                 cal.add(Calendar.MINUTE, 10);
@@ -97,9 +100,9 @@ public class AuthService {
                         studentRepository.save(student);
                 }
 
-                log.info("User saved with id: {}. OTP sent.", savedUser.getId());
+                log.info("User saved with id: {}. Instant registration complete.", savedUser.getId());
                 return AuthResponse.builder()
-                                .token(null) // Don't return token until verified
+                                .token(jwtToken) // Return token for auto-login
                                 .build();
         }
 

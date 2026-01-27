@@ -47,7 +47,12 @@ export const AuthProvider = ({ children }) => {
     const signup = async (userData) => {
         try {
             const response = await api.post('/auth/signup', userData);
-            // No token returned yet, user needs to verify OTP
+            const { token } = response.data;
+            if (token) {
+                localStorage.setItem('token', token);
+                setToken(token);
+                decodeAndSetUser(token);
+            }
             return true;
         } catch (error) {
             console.error("Signup failed", error);

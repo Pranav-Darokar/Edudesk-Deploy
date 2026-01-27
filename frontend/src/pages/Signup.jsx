@@ -34,8 +34,8 @@ const Signup = () => {
         onSubmit: async (values) => {
             try {
                 await signup(values);
-                toast.success('Sign up successful! Please check your email for the OTP.');
-                navigate('/verify-otp', { state: { email: values.email } });
+                toast.success('Registration successful! Welcome to EduDesk.');
+                navigate('/');
             } catch (error) {
                 toast.error(error.message || 'Signup failed. Try again.');
             }
@@ -62,7 +62,7 @@ const Signup = () => {
                 <div className="bg-white p-10 rounded-3xl shadow-2xl shadow-indigo-500/10 border border-slate-100">
                     <div>
                         <h2 className="text-2xl font-bold text-slate-900 mb-2">Create Account</h2>
-                        <p className="text-slate-500 text-sm mb-8">Verification code will be sent to your email.</p>
+                        <p className="text-slate-500 text-sm mb-8">Join our community today.</p>
                     </div>
 
                     <form className="space-y-6" onSubmit={formik.handleSubmit}>
