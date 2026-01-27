@@ -3,10 +3,12 @@ import Layout from '../components/Layout';
 import api from '../services/api';
 import { TrashIcon, UserIcon } from '@heroicons/react/24/outline';
 import { toast } from 'react-hot-toast';
+import ConfirmModal from '../components/ConfirmModal';
 
 const AdminUsers = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [deleteModal, setDeleteModal] = useState({ isOpen: false, userId: null });
 
     useEffect(() => {
         fetchUsers();
@@ -24,16 +26,22 @@ const AdminUsers = () => {
         }
     };
 
-    const handleDelete = async (id) => {
-        if (!window.confirm("Are you sure you want to delete this user?")) return;
+    const confirmDelete = async () => {
+        if (!deleteModal.userId) return;
         try {
-            await api.delete(`/admin/users/${id}`);
-            setUsers(users.filter(user => user.id !== id));
+            await api.delete(`/admin/users/${deleteModal.userId}`);
+            setUsers(users.filter(user => user.id !== deleteModal.userId));
             toast.success("User deleted successfully");
         } catch (error) {
             console.error("Failed to delete user", error);
             toast.error("Failed to delete user");
+        } finally {
+            setDeleteModal({ isOpen: false, userId: null });
         }
+    };
+
+    const handleDeleteClick = (id) => {
+        setDeleteModal({ isOpen: true, userId: id });
     };
 
     return (
@@ -99,7 +107,7 @@ const AdminUsers = () => {
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <button
-                                                onClick={() => handleDelete(user.id)}
+                                                onClick={() => handleDeleteClick(user.id)}
                                                 className="text-red-600 hover:text-red-900 dark:hover:text-red-400 transition-colors"
                                                 title="Delete User"
                                             >
@@ -113,6 +121,14 @@ const AdminUsers = () => {
                     </div>
                 )}
             </div>
+
+            <ConfirmModal
+                isOpen={deleteModal.isOpen}
+                onClose={() => setDeleteModal({ isOpen: false, userId: null })}
+                onConfirm={confirmDelete}
+                title="Delete User"
+                message="Are you sure you want to delete this user? This will also remove all their associated data (profile, exam results, fees, etc.). This action cannot be undone."
+            />
         </Layout>
     );
 };

@@ -3,12 +3,14 @@ import Layout from '../components/Layout';
 import api from '../services/api';
 import { TrashIcon, BookOpenIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { toast } from 'react-hot-toast';
+import ConfirmModal from '../components/ConfirmModal';
 
 const AdminCourses = () => {
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
     const [newCourse, setNewCourse] = useState({ title: '', description: '', duration: '' });
+    const [deleteModal, setDeleteModal] = useState({ isOpen: false, courseId: null });
 
     useEffect(() => {
         fetchCourses();
@@ -26,6 +28,8 @@ const AdminCourses = () => {
         }
     };
 
+    // ... rest of the functions
+
     const handleCreate = async (e) => {
         e.preventDefault();
         try {
@@ -40,16 +44,22 @@ const AdminCourses = () => {
         }
     };
 
-    const handleDelete = async (id) => {
-        if (!window.confirm("Are you sure you want to delete this course?")) return;
+    const confirmDelete = async () => {
+        if (!deleteModal.courseId) return;
         try {
-            await api.delete(`/courses/${id}`);
-            setCourses(courses.filter(course => course.id !== id));
+            await api.delete(`/courses/${deleteModal.courseId}`);
+            setCourses(courses.filter(course => course.id !== deleteModal.courseId));
             toast.success("Course deleted successfully");
         } catch (error) {
             console.error("Failed to delete course", error);
             toast.error("Failed to delete course");
+        } finally {
+            setDeleteModal({ isOpen: false, courseId: null });
         }
+    };
+
+    const handleDeleteClick = (id) => {
+        setDeleteModal({ isOpen: true, courseId: id });
     };
 
     return (
@@ -126,7 +136,7 @@ const AdminCourses = () => {
                                         <BookOpenIcon className="h-6 w-6" />
                                     </div>
                                     <button
-                                        onClick={() => handleDelete(course.id)}
+                                        onClick={() => handleDeleteClick(course.id)}
                                         className="text-gray-400 hover:text-red-600 transition-colors"
                                     >
                                         <TrashIcon className="h-5 w-5" />
@@ -143,6 +153,14 @@ const AdminCourses = () => {
                     </div>
                 )}
             </div>
+
+            <ConfirmModal
+                isOpen={deleteModal.isOpen}
+                onClose={() => setDeleteModal({ isOpen: false, courseId: null })}
+                onConfirm={confirmDelete}
+                title="Delete Course"
+                message="Are you sure you want to delete this course? This action cannot be undone."
+            />
         </Layout>
     );
 };
