@@ -28,24 +28,31 @@ ChartJS.register(
     Legend
 );
 
+import { useAuth } from '../context/AuthContext';
+
 const Dashboard = () => {
+    const { user } = useAuth();
     const [statsData, setStatsData] = React.useState(null);
     const [loading, setLoading] = React.useState(true);
 
     React.useEffect(() => {
         const fetchStats = async () => {
+            if (user?.role !== 'ADMIN') {
+                setLoading(false);
+                return;
+            }
+
             try {
                 const response = await api.get('/admin/dashboard/stats');
                 setStatsData(response.data);
             } catch (error) {
                 console.error("Failed to fetch dashboard stats", error);
             } finally {
-                // Artificial delay to show off skeletons
                 setTimeout(() => setLoading(false), 800);
             }
         };
         fetchStats();
-    }, []);
+    }, [user]);
 
     const stats = [
         { name: 'Total Students', value: statsData?.totalStudents || 0, color: 'text-indigo-600', bg: 'bg-indigo-100 dark:bg-indigo-900/30' },
@@ -98,6 +105,26 @@ const Dashboard = () => {
             },
         ],
     };
+
+    if (user?.role !== 'ADMIN') {
+        return (
+            <Layout>
+                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-8 text-center">
+                    <div className="flex justify-center mb-6">
+                        <div className="h-24 w-24 bg-indigo-100 dark:bg-indigo-900/30 rounded-full flex items-center justify-center">
+                            <span className="text-4xl">👋</span>
+                        </div>
+                    </div>
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                        Welcome back, {user?.name || 'Student'}!
+                    </h2>
+                    <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto">
+                        Your dashboard is ready. Access your profile, enrolled courses, and other resources from the sidebar.
+                    </p>
+                </div>
+            </Layout>
+        );
+    }
 
     return (
         <Layout>

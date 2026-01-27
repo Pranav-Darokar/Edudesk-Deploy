@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import {
     UserGroupIcon,
     AcademicCapIcon,
@@ -10,6 +11,8 @@ import {
 import Logo from '../components/Logo';
 
 const Landing = () => {
+    const { user } = useAuth();
+
     return (
         <div className="min-h-screen bg-white text-slate-900 selection:bg-indigo-500/20">
             {/* Navbar */}
@@ -20,13 +23,24 @@ const Landing = () => {
                         <div className="hidden md:flex items-center space-x-8 text-sm font-medium text-slate-600">
                             <a href="#features" className="hover:text-indigo-600 transition-colors">Features</a>
                             <a href="#about" className="hover:text-indigo-600 transition-colors">About</a>
-                            <Link to="/login" className="hover:text-indigo-600 transition-colors">Login</Link>
-                            <Link
-                                to="/signup"
-                                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-600/20"
-                            >
-                                Get Started
-                            </Link>
+                            {user ? (
+                                <Link
+                                    to="/dashboard"
+                                    className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-600/20"
+                                >
+                                    Go to Dashboard
+                                </Link>
+                            ) : (
+                                <>
+                                    <Link to="/login" className="hover:text-indigo-600 transition-colors">Login</Link>
+                                    <Link
+                                        to="/signup"
+                                        className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-600/20"
+                                    >
+                                        Get Started
+                                    </Link>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -61,19 +75,31 @@ const Landing = () => {
                         teachers, and administrators. Premium design meets powerful functionality.
                     </p>
                     <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6">
-                        <Link
-                            to="/signup"
-                            className="w-full sm:w-auto px-8 py-4 bg-indigo-600 text-white rounded-xl font-bold text-lg hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-600/30 flex items-center justify-center group"
-                        >
-                            Get Started Free
-                            <ArrowRightIcon className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                        </Link>
-                        <Link
-                            to="/login"
-                            className="w-full sm:w-auto px-8 py-4 bg-white text-slate-900 rounded-xl font-bold text-lg hover:bg-slate-50 transition-all border border-slate-200 flex items-center justify-center shadow-sm"
-                        >
-                            Log In
-                        </Link>
+                        {user ? (
+                            <Link
+                                to="/dashboard"
+                                className="w-full sm:w-auto px-8 py-4 bg-indigo-600 text-white rounded-xl font-bold text-lg hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-600/30 flex items-center justify-center group"
+                            >
+                                Continue to Dashboard
+                                <ArrowRightIcon className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                            </Link>
+                        ) : (
+                            <>
+                                <Link
+                                    to="/signup"
+                                    className="w-full sm:w-auto px-8 py-4 bg-indigo-600 text-white rounded-xl font-bold text-lg hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-600/30 flex items-center justify-center group"
+                                >
+                                    Get Started Free
+                                    <ArrowRightIcon className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                                </Link>
+                                <Link
+                                    to="/login"
+                                    className="w-full sm:w-auto px-8 py-4 bg-white text-slate-900 rounded-xl font-bold text-lg hover:bg-slate-50 transition-all border border-slate-200 flex items-center justify-center shadow-sm"
+                                >
+                                    Log In
+                                </Link>
+                            </>
+                        )}
                     </div>
                 </div>
             </header>
