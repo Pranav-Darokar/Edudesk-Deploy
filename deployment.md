@@ -30,7 +30,14 @@ This guide explains how to deploy the EduDesk application (Spring Boot + React +
     - **Output Directory**: `dist`
 4.  Add **Environment Variables**:
     - `VITE_API_BASE_URL`: The URL of your backend + `/api` (e.g., `https://edudesk-backend.railway.app/api`).
-5.  Click **Deploy**.
+    
+    > **How to add this in Vercel:**
+    > 1. Go to your Project Settings.
+    > 2. Click **Environment Variables** in the sidebar.
+    > 3. Key: `VITE_API_BASE_URL`
+    > 4. Value: `https://edudesk-application-production.up.railway.app/api`
+    > 5. Click **Save**.
+    > 6. Go to **Deployments** and click **Redeploy** on your latest commit for changes to take effect.
 
 ## 4. Final Steps
 1.  Ensure your backend's `APP_FRONTEND_URL` variable on Railway matches your Vercel deployment URL (e.g., `https://edudesk-frontend.vercel.app`).
