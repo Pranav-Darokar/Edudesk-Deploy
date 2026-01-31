@@ -26,6 +26,7 @@ public class StudentServiceImpl implements StudentService {
 
     private final StudentRepository studentRepository;
     private final UserRepository userRepository;
+    private final com.codingshuttle.youtube.LearningRESTAPI.service.AdminUserService adminUserService;
     private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
 
@@ -76,7 +77,7 @@ public class StudentServiceImpl implements StudentService {
                 .orElseThrow(() -> new IllegalArgumentException("Student does not exists by id: " + id));
 
         // Delete associated User account
-        userRepository.findByEmail(student.getEmail()).ifPresent(userRepository::delete);
+        userRepository.findByEmail(student.getEmail()).ifPresent(user -> adminUserService.deleteUser(user.getId()));
 
         studentRepository.deleteById(id);
     }

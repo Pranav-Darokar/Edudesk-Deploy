@@ -16,4 +16,8 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
     @org.springframework.data.jpa.repository.Modifying
     @org.springframework.transaction.annotation.Transactional
     void deleteByCourse(com.codingshuttle.youtube.LearningRESTAPI.entity.Course course);
+
+    @org.springframework.data.jpa.repository.Modifying
+    @org.springframework.transaction.annotation.Transactional
+    void deleteByStudent(User student);
 }

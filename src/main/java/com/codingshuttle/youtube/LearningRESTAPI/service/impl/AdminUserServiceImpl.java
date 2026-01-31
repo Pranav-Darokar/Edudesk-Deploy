@@ -23,6 +23,7 @@ public class AdminUserServiceImpl implements AdminUserService {
     private final AttendanceRepository attendanceRepository;
     private final ExamResultRepository examResultRepository;
     private final FeePaymentRepository feePaymentRepository;
+    private final EnrollmentRepository enrollmentRepository;
 
     @Override
     public List<User> getAllUsers() {
@@ -58,6 +59,7 @@ public class AdminUserServiceImpl implements AdminUserService {
         attendanceRepository.deleteByStudentId(id);
         examResultRepository.deleteByStudentId(id);
         feePaymentRepository.deleteByStudentId(id);
+        enrollmentRepository.deleteByStudent(user);
 
         userRepository.delete(user);
     }
