@@ -24,6 +24,7 @@ public class DataInitializer {
     private final AttendanceRepository attendanceRepository;
     private final EnrollmentRepository enrollmentRepository;
     private final TeacherRepository teacherRepository;
+    private final ProfileRepository profileRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Bean
@@ -45,6 +46,20 @@ public class DataInitializer {
                 log.info("Default admin user created: {}", adminEmail);
             } else {
                 log.info("Admin user already exists.");
+            }
+
+            // Ensure Admin Profile Exists
+            User admin = userRepository.findByEmail(adminEmail).orElseThrow();
+            if (profileRepository.findByUserId(admin.getId()).isEmpty()) {
+                Profile adminProfile = Profile.builder()
+                        .user(admin)
+                        .bio("System Administrator")
+                        .phoneNumber("000-000-0000")
+                        .address("Admin HQ")
+                        .dob(LocalDate.of(1980, 1, 1))
+                        .build();
+                profileRepository.save(adminProfile);
+                log.info("Admin profile seeded.");
             }
 
             seedTeachersAndCourses();
