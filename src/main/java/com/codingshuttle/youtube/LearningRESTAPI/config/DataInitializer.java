@@ -71,18 +71,17 @@ public class DataInitializer {
     private void seedTeachersAndCourses() {
         // 1. Ensure Teachers Exist
         if (teacherRepository.count() == 0) {
-            log.info("Seeding teachers...");
-            Teacher t1 = Teacher.builder().name("Dr. C.V. Raman").email("raman@edudesk.com").subject("Physics")
-                    .experience("15 years").build();
-            Teacher t2 = Teacher.builder().name("Dr. APJ Abdul Kalam").email("kalam@edudesk.com")
-                    .subject("Aeronautics").experience("20 years").build();
-            Teacher t3 = Teacher.builder().name("Srinivasa Ramanujan").email("ramanujan@edudesk.com")
-                    .subject("Mathematics").experience("10 years").build();
-
-            teacherRepository.save(t1);
-            teacherRepository.save(t2);
-            teacherRepository.save(t3);
-            log.info("Teachers seeded.");
+            // Create 10 Teachers
+            for (int i = 1; i <= 10; i++) {
+                Teacher t = Teacher.builder()
+                        .name("Teacher " + i)
+                        .email("teacher" + i + "@edudesk.com")
+                        .subject("Subject " + i)
+                        .experience((i + 5) + " years")
+                        .build();
+                teacherRepository.save(t);
+            }
+            log.info("10 Teachers seeded.");
         }
 
         // 2. Fetch Teachers for assignment
@@ -90,39 +89,31 @@ public class DataInitializer {
         if (teachers.isEmpty())
             return; // Should not happen after above block
 
-        Teacher t1 = teachers.stream().filter(t -> t.getSubject().equals("Physics")).findFirst()
-                .orElse(teachers.get(0));
-        Teacher t2 = teachers.stream().filter(t -> t.getSubject().equals("Aeronautics")).findFirst()
-                .orElse(teachers.get(0));
-        Teacher t3 = teachers.stream().filter(t -> t.getSubject().equals("Mathematics")).findFirst()
-                .orElse(teachers.get(0));
-
         // 3. Ensure Courses have Teachers
         java.util.List<Course> courses = courseRepository.findAll();
         if (courses.isEmpty()) {
-            // Create default courses if none exist
-            Course c1 = Course.builder().title("Mathematics 101").description("Introduction to basic mathematics")
-                    .duration(12).teacher(t3).build();
-            Course c2 = Course.builder().title("Physics 101").description("Introduction to physics principles")
-                    .duration(14).teacher(t1).build();
-            Course c3 = Course.builder().title("Computer Science A").description("Basics of programming").duration(10)
-                    .teacher(t2).build();
+            // Create 10 Courses
+            String[] subjects = { "Mathematics", "Physics", "Chemistry", "Biology", "Computer Science", "History",
+                    "Geography", "English", "Art", "Music" };
 
-            courseRepository.save(c1);
-            courseRepository.save(c2);
-            courseRepository.save(c3);
-            log.info("Courses seeded with teachers.");
+            for (int i = 0; i < 10; i++) {
+                Teacher teacher = teachers.get(i % teachers.size());
+                Course c = Course.builder()
+                        .title(subjects[i] + " " + (101 + i))
+                        .description("Introduction to " + subjects[i])
+                        .duration(10 + i)
+                        .teacher(teacher)
+                        .build();
+                courseRepository.save(c);
+            }
+            log.info("10 Courses seeded with teachers.");
         } else {
             // Update existing courses
             boolean updated = false;
             for (Course c : courses) {
                 if (c.getTeacher() == null) {
-                    if (c.getTitle().contains("Math"))
-                        c.setTeacher(t3);
-                    else if (c.getTitle().contains("Physics"))
-                        c.setTeacher(t1);
-                    else
-                        c.setTeacher(t2);
+                    Teacher randomTeacher = teachers.get((int) (Math.random() * teachers.size()));
+                    c.setTeacher(randomTeacher);
                     courseRepository.save(c);
                     updated = true;
                 }

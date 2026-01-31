@@ -41,10 +41,10 @@ public class FeesServiceImpl implements FeesService {
     }
 
     @Override
+    @org.springframework.transaction.annotation.Transactional
     public void deleteFeeStructure(Long id) {
-        if (feePaymentRepository.existsByFeeStructureId(id)) {
-            throw new RuntimeException("Cannot delete fee structure with associated payments.");
-        }
+        // Delete associated payments first
+        feePaymentRepository.deleteByFeeStructureId(id);
         feeStructureRepository.deleteById(id);
     }
 

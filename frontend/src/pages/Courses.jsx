@@ -165,6 +165,11 @@ const Courses = () => {
                                         <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-100 dark:border-gray-700">
                                             <div className="text-xs text-gray-400 font-medium flex items-center">
                                                 <span className="mr-1">🕒</span> {course.duration} Weeks
+                                                {course.teacherName && (
+                                                    <span className="ml-3 flex items-center">
+                                                        <span className="mr-1">👨‍🏫</span> {course.teacherName}
+                                                    </span>
+                                                )}
                                             </div>
                                             {isEnrolled ? (
                                                 <button disabled className="text-green-600 font-semibold text-sm cursor-default flex items-center">

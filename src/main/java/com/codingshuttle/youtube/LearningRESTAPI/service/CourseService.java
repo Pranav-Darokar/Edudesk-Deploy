@@ -21,7 +21,13 @@ public class CourseService {
     public List<CourseDto> getAllCourses() {
         return courseRepository.findAll()
                 .stream()
-                .map(course -> modelMapper.map(course, CourseDto.class))
+                .map(course -> {
+                    CourseDto dto = modelMapper.map(course, CourseDto.class);
+                    if (course.getTeacher() != null) {
+                        dto.setTeacherName(course.getTeacher().getName());
+                    }
+                    return dto;
+                })
                 .collect(Collectors.toList());
     }
 
@@ -33,7 +39,11 @@ public class CourseService {
 
     public CourseDto getCourseById(Long id) {
         Course course = courseRepository.findById(id).orElseThrow(() -> new RuntimeException("Course not found"));
-        return modelMapper.map(course, CourseDto.class);
+        CourseDto dto = modelMapper.map(course, CourseDto.class);
+        if (course.getTeacher() != null) {
+            dto.setTeacherName(course.getTeacher().getName());
+        }
+        return dto;
     }
 
     @org.springframework.transaction.annotation.Transactional

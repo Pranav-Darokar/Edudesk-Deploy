@@ -13,4 +13,6 @@ public interface FeePaymentRepository extends JpaRepository<FeePayment, Long> {
     void deleteByStudentId(Long studentId);
 
     boolean existsByFeeStructureId(Long feeStructureId);
+
+    void deleteByFeeStructureId(Long feeStructureId);
 }

@@ -14,4 +14,5 @@ public class CourseDto {
     private String title;
     private String description;
     private Integer duration;
+    private String teacherName;
 }
