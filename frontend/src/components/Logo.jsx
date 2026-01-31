@@ -65,7 +65,7 @@ const Logo = ({ className = "w-8 h-8", iconOnly = false }) => {
                 />
             </svg>
             {!iconOnly && (
-                <span className="text-xl font-bold tracking-tight text-slate-900 ml-1">
+                <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent ml-1" style={{ fontFamily: "'Poppins', sans-serif" }}>
                     EduDesk
                 </span>
             )}

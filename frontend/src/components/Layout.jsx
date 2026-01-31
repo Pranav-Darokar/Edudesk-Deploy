@@ -54,6 +54,9 @@ const Layout = ({ children }) => {
         navigation.push({ name: 'Attendance', href: '/admin/attendance', icon: CalendarDaysIcon });
         navigation.push({ name: 'Reports', href: '/admin/reports', icon: ChartPieIcon });
         navigation.push({ name: 'System Settings', href: '/admin/system', icon: Cog6ToothIcon });
+    } else if (user?.role === 'STUDENT') {
+        navigation.push({ name: 'My Exams', href: '/my-exams', icon: ClipboardDocumentCheckIcon });
+        navigation.push({ name: 'Attendance', href: '/my-attendance', icon: CalendarDaysIcon });
     }
 
     return (

@@ -28,6 +28,12 @@ public class FeesController {
         return ResponseEntity.ok(feesService.createFeeStructure(structure));
     }
 
+    @PutMapping("/structures/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
+    public ResponseEntity<FeeStructure> updateStructure(@PathVariable Long id, @RequestBody FeeStructure structure) {
+        return ResponseEntity.ok(feesService.updateFeeStructure(id, structure));
+    }
+
     @DeleteMapping("/structures/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
     public ResponseEntity<Void> deleteStructure(@PathVariable Long id) {
@@ -47,5 +53,12 @@ public class FeesController {
             @PathVariable Long structureId,
             @RequestBody FeePayment payment) {
         return ResponseEntity.ok(feesService.collectPayment(studentId, structureId, payment));
+    }
+
+    @DeleteMapping("/payments/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deletePayment(@PathVariable Long id) {
+        feesService.deletePayment(id);
+        return ResponseEntity.noContent().build();
     }
 }

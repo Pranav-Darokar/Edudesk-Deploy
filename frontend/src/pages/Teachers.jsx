@@ -128,6 +128,7 @@ const Teachers = () => {
                     onEdit={handleEdit}
                     onDelete={handleDelete}
                     showDelete={isAdmin}
+                    showEdit={isAdmin}
                 />
 
                 {/* Pagination Controls */}

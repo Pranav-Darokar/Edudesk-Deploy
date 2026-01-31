@@ -10,6 +10,8 @@ public interface FeesService {
 
     FeeStructure createFeeStructure(FeeStructure feeStructure);
 
+    FeeStructure updateFeeStructure(Long id, FeeStructure feeStructure);
+
     void deleteFeeStructure(Long id);
 
     List<FeePayment> getAllPayments();
@@ -17,4 +19,6 @@ public interface FeesService {
     FeePayment collectPayment(Long studentId, Long feeStructureId, FeePayment payment);
 
     List<FeePayment> getStudentPayments(Long studentId);
+
+    void deletePayment(Long id);
 }

@@ -21,4 +21,8 @@ public class Course {
     private String title;
     private String description;
     private Integer duration; // in weeks
+
+    @jakarta.persistence.ManyToOne
+    @jakarta.persistence.JoinColumn(name = "teacher_id")
+    private Teacher teacher;
 }

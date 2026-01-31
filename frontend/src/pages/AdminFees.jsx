@@ -12,6 +12,8 @@ const AdminFees = () => {
     const [isStructureModalOpen, setIsStructureModalOpen] = useState(false);
     const [newStructure, setNewStructure] = useState({ className: '', amount: '', description: '' });
 
+    const [editingStructure, setEditingStructure] = useState(null);
+
     const fetchData = async () => {
         try {
             const [structRes, payRes] = await Promise.all([
@@ -29,27 +31,59 @@ const AdminFees = () => {
         fetchData();
     }, []);
 
-    const handleCreateStructure = async (e) => {
+    const handleCreateOrUpdateStructure = async (e) => {
         e.preventDefault();
         try {
-            await api.post('/admin/fees/structures', newStructure);
-            toast.success('Fee structure created');
+            if (editingStructure) {
+                await api.put(`/admin/fees/structures/${editingStructure.id}`, newStructure);
+                toast.success('Fee structure updated');
+            } else {
+                await api.post('/admin/fees/structures', newStructure);
+                toast.success('Fee structure created');
+            }
             setIsStructureModalOpen(false);
             setNewStructure({ className: '', amount: '', description: '' });
+            setEditingStructure(null);
             fetchData();
         } catch (error) {
-            toast.error('Failed to create structure');
+            toast.error(editingStructure ? 'Failed to update structure' : 'Failed to create structure');
         }
+    };
+
+    const handleEditStructure = (structure) => {
+        setEditingStructure(structure);
+        setNewStructure({
+            className: structure.className,
+            amount: structure.amount,
+            description: structure.description
+        });
+        setIsStructureModalOpen(true);
     };
 
     const handleDeleteStructure = async (id) => {
         if (window.confirm('Delete this structure?')) {
             try {
+                console.log('Deleting structure with ID:', id);
                 await api.delete(`/admin/fees/structures/${id}`);
                 toast.success('Structure removed');
                 fetchData();
             } catch (error) {
-                toast.error('Failed to delete');
+                console.error('Delete failed:', error);
+                const msg = error.response?.data?.message || 'Failed to delete';
+                toast.error(msg);
+            }
+        }
+    };
+
+    const handleDeletePayment = async (id) => {
+        if (window.confirm('Are you sure you want to delete this payment record?')) {
+            try {
+                await api.delete(`/admin/fees/payments/${id}`);
+                toast.success('Payment record deleted');
+                fetchData();
+            } catch (error) {
+                console.error('Delete payment failed:', error);
+                toast.error('Failed to delete payment');
             }
         }
     };
@@ -68,6 +102,12 @@ const AdminFees = () => {
         { key: 'paymentDate', header: 'Date', render: (d) => new Date(d).toLocaleDateString() },
     ];
 
+    const openModal = () => {
+        setEditingStructure(null);
+        setNewStructure({ className: '', amount: '', description: '' });
+        setIsStructureModalOpen(true);
+    };
+
     return (
         <Layout>
             <div className="space-y-8">
@@ -78,8 +118,8 @@ const AdminFees = () => {
                             <p className="mt-2 text-sm text-gray-700">Define fee structures by class or level.</p>
                         </div>
                         <button
-                            onClick={() => setIsStructureModalOpen(true)}
-                            className="bg-primary text-white px-4 py-2 rounded-md hover:bg-indigo-700 flex items-center"
+                            onClick={openModal}
+                            className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 flex items-center"
                         >
                             <PlusIcon className="h-5 w-5 mr-2" /> Add Structure
                         </button>
@@ -87,8 +127,8 @@ const AdminFees = () => {
                     <Table
                         columns={columns}
                         data={structures}
-                        onEdit={() => { }}
-                        onDelete={handleDeleteStructure}
+                        onEdit={handleEditStructure}
+                        onDelete={(structure) => handleDeleteStructure(structure.id)}
                     />
                 </div>
 
@@ -97,7 +137,9 @@ const AdminFees = () => {
                     <Table
                         columns={paymentColumns}
                         data={payments}
-                        actions={false}
+                        actions={true}
+                        showEdit={false}
+                        onDelete={(payment) => handleDeletePayment(payment.id)}
                     />
                 </div>
             </div>
@@ -105,9 +147,9 @@ const AdminFees = () => {
             <Modal
                 isOpen={isStructureModalOpen}
                 onClose={() => setIsStructureModalOpen(false)}
-                title="Create Fee Structure"
+                title={editingStructure ? "Update Fee Structure" : "Create Fee Structure"}
             >
-                <form onSubmit={handleCreateStructure} className="space-y-4">
+                <form onSubmit={handleCreateOrUpdateStructure} className="space-y-4">
                     <div>
                         <label className="block text-sm font-medium">Class Name</label>
                         <input
@@ -138,7 +180,9 @@ const AdminFees = () => {
                     </div>
                     <div className="flex justify-end space-x-2">
                         <button type="button" onClick={() => setIsStructureModalOpen(false)} className="px-4 py-2 border rounded">Cancel</button>
-                        <button type="submit" className="px-4 py-2 bg-primary text-white rounded">Save</button>
+                        <button type="submit" className="px-4 py-2 bg-indigo-600 text-white rounded">
+                            {editingStructure ? "Save Changes" : "Save"}
+                        </button>
                     </div>
                 </form>
             </Modal>

@@ -10,6 +10,8 @@ public interface ExamService {
 
     Exam scheduleExam(Exam exam);
 
+    Exam updateExam(Long id, Exam exam);
+
     void deleteExam(Long id);
 
     List<ExamResult> getResultsByExam(Long examId);

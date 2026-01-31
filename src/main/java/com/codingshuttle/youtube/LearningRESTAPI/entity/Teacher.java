@@ -22,4 +22,8 @@ public class Teacher {
     private String email;
     private String subject;
     private String experience;
+
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    @jakarta.persistence.OneToMany(mappedBy = "teacher")
+    private java.util.List<Course> courses;
 }

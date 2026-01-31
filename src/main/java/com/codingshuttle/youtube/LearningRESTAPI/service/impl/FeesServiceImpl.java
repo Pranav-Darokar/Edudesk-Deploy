@@ -31,7 +31,20 @@ public class FeesServiceImpl implements FeesService {
     }
 
     @Override
+    public FeeStructure updateFeeStructure(Long id, FeeStructure feeStructure) {
+        FeeStructure existing = feeStructureRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Fee structure not found"));
+        existing.setClassName(feeStructure.getClassName());
+        existing.setAmount(feeStructure.getAmount());
+        existing.setDescription(feeStructure.getDescription());
+        return feeStructureRepository.save(existing);
+    }
+
+    @Override
     public void deleteFeeStructure(Long id) {
+        if (feePaymentRepository.existsByFeeStructureId(id)) {
+            throw new RuntimeException("Cannot delete fee structure with associated payments.");
+        }
         feeStructureRepository.deleteById(id);
     }
 
@@ -57,5 +70,10 @@ public class FeesServiceImpl implements FeesService {
     @Override
     public List<FeePayment> getStudentPayments(Long studentId) {
         return feePaymentRepository.findByStudentId(studentId);
+    }
+
+    @Override
+    public void deletePayment(Long id) {
+        feePaymentRepository.deleteById(id);
     }
 }

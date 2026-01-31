@@ -19,6 +19,8 @@ import ResetPassword from './pages/ResetPassword';
 import VerifyOTP from './pages/VerifyOTP';
 import Profile from './pages/Profile';
 import { useAuth } from './context/AuthContext';
+import StudentExams from './pages/StudentExams';
+import StudentAttendance from './pages/StudentAttendance';
 
 // Protected Route Component
 const ProtectedRoute = ({ children, adminOnly = false }) => {
@@ -137,6 +139,22 @@ const App = () => {
         element={
           <ProtectedRoute>
             <Profile />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/my-attendance"
+        element={
+          <ProtectedRoute>
+            <StudentAttendance />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/my-exams"
+        element={
+          <ProtectedRoute>
+            <StudentExams />
           </ProtectedRoute>
         }
       />

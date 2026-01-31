@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -6,23 +6,51 @@ import {
     AcademicCapIcon,
     CurrencyDollarIcon,
     ClipboardDocumentCheckIcon,
-    ArrowRightIcon
+    ArrowRightIcon,
+    SunIcon,
+    MoonIcon
 } from '@heroicons/react/24/outline';
 import Logo from '../components/Logo';
 
 const Landing = () => {
     const { user } = useAuth();
+    const [theme, setTheme] = useState('light');
+
+    useEffect(() => {
+        const savedTheme = localStorage.getItem('theme') ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        setTheme(savedTheme);
+        document.documentElement.classList.toggle('dark', savedTheme === 'dark');
+    }, []);
+
+    const toggleTheme = () => {
+        const newTheme = theme === 'light' ? 'dark' : 'light';
+        setTheme(newTheme);
+        localStorage.setItem('theme', newTheme);
+        document.documentElement.classList.toggle('dark', newTheme === 'dark');
+    };
 
     return (
-        <div className="min-h-screen bg-white text-slate-900 selection:bg-indigo-500/20">
+        <div className="min-h-screen bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 selection:bg-indigo-500/20 transition-colors">
             {/* Navbar */}
-            <nav className="fixed top-0 w-full z-50 backdrop-blur-md bg-white/70 border-b border-slate-200">
+            <nav className="fixed top-0 w-full z-50 backdrop-blur-md bg-white/70 dark:bg-slate-900/70 border-b border-slate-200 dark:border-slate-700">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16 items-center">
                         <Logo className="w-8 h-8" />
-                        <div className="hidden md:flex items-center space-x-8 text-sm font-medium text-slate-600">
-                            <a href="#features" className="hover:text-indigo-600 transition-colors">Features</a>
-                            <a href="#about" className="hover:text-indigo-600 transition-colors">About</a>
+                        <div className="hidden md:flex items-center space-x-8 text-sm font-medium text-slate-600 dark:text-slate-300">
+                            <a href="#features" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Features</a>
+                            <a href="#about" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">About</a>
+                            <button
+                                onClick={toggleTheme}
+                                className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                                aria-label="Toggle theme"
+                            >
+                                {theme === 'light' ? (
+                                    <MoonIcon className="h-5 w-5" />
+                                ) : (
+                                    <SunIcon className="h-5 w-5" />
+                                )}
+                            </button>
                             {user ? (
                                 <Link
                                     to="/dashboard"
@@ -47,7 +75,7 @@ const Landing = () => {
             </nav>
 
             {/* Hero Section */}
-            <header className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden bg-slate-50">
+            <header className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden bg-slate-50 dark:bg-slate-800">
                 {/* Mesh Gradient / Decorative Blobs */}
                 <div className="absolute inset-0 overflow-hidden pointer-events-none">
                     <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-indigo-200/40 rounded-full blur-[120px] animate-pulse"></div>
@@ -56,7 +84,7 @@ const Landing = () => {
                 </div>
 
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-                    <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-600 text-xs font-semibold mb-8 backdrop-blur-sm">
+                    <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-100 dark:border-indigo-800 text-indigo-600 dark:text-indigo-400 text-xs font-semibold mb-8 backdrop-blur-sm">
                         <span className="relative flex h-2 w-2">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
                             <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
@@ -68,9 +96,9 @@ const Landing = () => {
                             Education Management
                         </span>
                         <br />
-                        <span className="text-slate-900">Redefined.</span>
+                        <span className="text-slate-900 dark:text-slate-100">Redefined.</span>
                     </h1>
-                    <p className="max-w-2xl mx-auto text-lg text-slate-600 mb-10 leading-relaxed">
+                    <p className="max-w-2xl mx-auto text-lg text-slate-600 dark:text-slate-300 mb-10 leading-relaxed">
                         Streamline your institution's operations with our all-in-one platform for students,
                         teachers, and administrators. Premium design meets powerful functionality.
                     </p>
@@ -105,11 +133,11 @@ const Landing = () => {
             </header>
 
             {/* Features Section */}
-            <section id="features" className="py-24 bg-white">
+            <section id="features" className="py-24 bg-white dark:bg-slate-900">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-16">
-                        <h2 className="text-3xl lg:text-4xl font-bold mb-4 text-slate-900">Powerful Features</h2>
-                        <p className="text-slate-500 max-w-xl mx-auto">Everything you need to run your school efficiently, all in one place.</p>
+                        <h2 className="text-3xl lg:text-4xl font-bold mb-4 text-slate-900 dark:text-slate-100">Powerful Features</h2>
+                        <p className="text-slate-500 dark:text-slate-400 max-w-xl mx-auto">Everything you need to run your school efficiently, all in one place.</p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -119,12 +147,12 @@ const Landing = () => {
                             { title: 'Fee Tracking', desc: 'Automated billing and payment tracking with reporting.', icon: CurrencyDollarIcon, color: 'text-emerald-600', bg: 'bg-emerald-50' },
                             { title: 'Exam Control', desc: 'Schedule exams and manage results with ease.', icon: ClipboardDocumentCheckIcon, color: 'text-amber-600', bg: 'bg-amber-50' },
                         ].map((feature, idx) => (
-                            <div key={idx} className="p-8 bg-slate-50 border border-slate-100 rounded-2xl hover:border-indigo-200 hover:shadow-lg hover:shadow-indigo-500/5 transition-all group">
-                                <div className={`w-12 h-12 rounded-xl ${feature.bg} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
+                            <div key={idx} className="p-8 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl hover:border-indigo-200 dark:hover:border-indigo-700 hover:shadow-lg hover:shadow-indigo-500/5 transition-all group">
+                                <div className={`w-12 h-12 rounded-xl ${feature.bg} dark:bg-opacity-20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
                                     <feature.icon className={`w-6 h-6 ${feature.color}`} />
                                 </div>
-                                <h3 className="text-xl font-bold mb-3 text-slate-800">{feature.title}</h3>
-                                <p className="text-slate-500 text-sm leading-relaxed">{feature.desc}</p>
+                                <h3 className="text-xl font-bold mb-3 text-slate-800 dark:text-slate-200">{feature.title}</h3>
+                                <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">{feature.desc}</p>
                             </div>
                         ))}
                     </div>
@@ -132,11 +160,11 @@ const Landing = () => {
             </section>
 
             {/* About Us Section */}
-            <section id="about" className="py-24 bg-slate-50 border-y border-slate-100">
+            <section id="about" className="py-24 bg-slate-50 dark:bg-slate-800 border-y border-slate-100 dark:border-slate-700">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-16">
-                        <h2 className="text-3xl lg:text-4xl font-bold mb-4 text-slate-900">About EduDesk</h2>
-                        <p className="text-slate-500 max-w-2xl mx-auto">Empowering institutions with cutting-edge digital tools for a brighter educational future.</p>
+                        <h2 className="text-3xl lg:text-4xl font-bold mb-4 text-slate-900 dark:text-slate-100">About EduDesk</h2>
+                        <p className="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">Empowering institutions with cutting-edge digital tools for a brighter educational future.</p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-16 mb-24">
@@ -144,8 +172,8 @@ const Landing = () => {
                             <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-600/20">
                                 <span className="text-white font-bold">M</span>
                             </div>
-                            <h3 className="text-3xl font-bold text-slate-900">Our Mission</h3>
-                            <p className="text-slate-600 leading-relaxed text-lg">
+                            <h3 className="text-3xl font-bold text-slate-900 dark:text-slate-100">Our Mission</h3>
+                            <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-lg">
                                 To revolutionize school management by delivering an intuitive, secure, and
                                 integrated platform that simplifies administrative complexity and enhances the learning experience.
                             </p>
@@ -154,8 +182,8 @@ const Landing = () => {
                             <div className="w-12 h-12 bg-purple-600 rounded-2xl flex items-center justify-center shadow-lg shadow-purple-600/20">
                                 <span className="text-white font-bold">V</span>
                             </div>
-                            <h3 className="text-3xl font-bold text-slate-900">Our Vision</h3>
-                            <p className="text-slate-600 leading-relaxed text-lg">
+                            <h3 className="text-3xl font-bold text-slate-900 dark:text-slate-100">Our Vision</h3>
+                            <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-lg">
                                 To become the global standard for educational administration, fostering an environment where technology and teaching work in perfect harmony.
                             </p>
                         </div>
@@ -167,12 +195,12 @@ const Landing = () => {
                             { title: 'Security', desc: 'Student and staff data is critical. We use industry-standard encryption and protocols.', icon: '🔒', color: 'text-emerald-600', bg: 'bg-emerald-50' },
                             { title: 'Innovation', desc: 'We continuously evolve, integrating the latest technologies to solve educational challenges.', icon: '🚀', color: 'text-purple-600', bg: 'bg-purple-50' },
                         ].map((value, idx) => (
-                            <div key={idx} className="p-10 bg-white border border-slate-100 rounded-3xl shadow-sm hover:shadow-xl hover:shadow-indigo-500/5 transition-all text-center space-y-4">
-                                <div className={`w-16 h-16 rounded-2xl ${value.bg} flex items-center justify-center mx-auto mb-6 text-2xl`}>
+                            <div key={idx} className="p-10 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-700 rounded-3xl shadow-sm hover:shadow-xl hover:shadow-indigo-500/5 transition-all text-center space-y-4">
+                                <div className={`w-16 h-16 rounded-2xl ${value.bg} dark:bg-opacity-20 flex items-center justify-center mx-auto mb-6 text-2xl`}>
                                     {value.icon}
                                 </div>
-                                <h3 className="text-2xl font-bold text-slate-800">{value.title}</h3>
-                                <p className="text-slate-500 leading-relaxed">{value.desc}</p>
+                                <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-200">{value.title}</h3>
+                                <p className="text-slate-500 dark:text-slate-400 leading-relaxed">{value.desc}</p>
                             </div>
                         ))}
                     </div>
@@ -180,31 +208,31 @@ const Landing = () => {
             </section>
 
             {/* Stats Section */}
-            <section className="py-20 bg-slate-50 border-y border-slate-200">
+            <section className="py-20 bg-slate-50 dark:bg-slate-800 border-y border-slate-200 dark:border-slate-700">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
                         <div>
                             <p className="text-4xl font-bold text-indigo-600 mb-1">10k+</p>
-                            <p className="text-slate-500 text-sm">Active Students</p>
+                            <p className="text-slate-500 dark:text-slate-400 text-sm">Active Students</p>
                         </div>
                         <div>
                             <p className="text-4xl font-bold text-purple-600 mb-1">500+</p>
-                            <p className="text-slate-500 text-sm">Partner Schools</p>
+                            <p className="text-slate-500 dark:text-slate-400 text-sm">Partner Schools</p>
                         </div>
                         <div>
                             <p className="text-4xl font-bold text-emerald-600 mb-1">99.9%</p>
-                            <p className="text-slate-500 text-sm">System Uptime</p>
+                            <p className="text-slate-500 dark:text-slate-400 text-sm">System Uptime</p>
                         </div>
                         <div>
                             <p className="text-4xl font-bold text-pink-600 mb-1">24/7</p>
-                            <p className="text-slate-500 text-sm">Expert Support</p>
+                            <p className="text-slate-500 dark:text-slate-400 text-sm">Expert Support</p>
                         </div>
                     </div>
                 </div>
             </section>
 
             {/* Footer */}
-            <footer className="py-12 bg-white text-slate-400 border-t border-slate-100">
+            <footer className="py-12 bg-white dark:bg-slate-900 text-slate-400 dark:text-slate-500 border-t border-slate-100 dark:border-slate-800">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center">
                     <Logo className="w-8 h-8 mb-4 md:mb-0" />
                     <p className="text-sm">© 2026 EduDesk. All rights reserved.</p>

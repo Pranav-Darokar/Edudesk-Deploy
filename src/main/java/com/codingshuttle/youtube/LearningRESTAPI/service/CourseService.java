@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 public class CourseService {
 
     private final CourseRepository courseRepository;
+    private final com.codingshuttle.youtube.LearningRESTAPI.repository.EnrollmentRepository enrollmentRepository;
     private final ModelMapper modelMapper;
 
     public List<CourseDto> getAllCourses() {
@@ -35,8 +36,11 @@ public class CourseService {
         return modelMapper.map(course, CourseDto.class);
     }
 
+    @org.springframework.transaction.annotation.Transactional
     public void deleteCourse(Long id) {
-        courseRepository.deleteById(id);
+        Course course = courseRepository.findById(id).orElseThrow(() -> new RuntimeException("Course not found"));
+        enrollmentRepository.deleteByCourse(course);
+        courseRepository.delete(course);
     }
 
     public CourseDto updateCourse(Long id, CourseDto courseDto) {

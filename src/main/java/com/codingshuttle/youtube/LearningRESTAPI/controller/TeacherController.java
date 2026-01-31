@@ -40,6 +40,7 @@ public class TeacherController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<TeacherDto> updateTeacher(@PathVariable Long id, @RequestBody TeacherDto teacherDto) {
         return ResponseEntity.ok(teacherService.updateTeacher(id, teacherDto));
     }

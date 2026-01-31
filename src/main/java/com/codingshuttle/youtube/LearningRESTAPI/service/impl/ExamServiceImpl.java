@@ -30,6 +30,20 @@ public class ExamServiceImpl implements ExamService {
     }
 
     @Override
+    public Exam updateExam(Long id, Exam exam) {
+        Exam existingExam = examRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Exam not found"));
+
+        existingExam.setTitle(exam.getTitle());
+        existingExam.setSubject(exam.getSubject());
+        existingExam.setExamDate(exam.getExamDate());
+        existingExam.setDurationMinutes(exam.getDurationMinutes());
+        existingExam.setTotalMarks(exam.getTotalMarks());
+
+        return examRepository.save(existingExam);
+    }
+
+    @Override
     public void deleteExam(Long id) {
         examRepository.deleteById(id);
     }

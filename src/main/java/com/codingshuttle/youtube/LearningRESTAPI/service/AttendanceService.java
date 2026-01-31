@@ -12,5 +12,7 @@ public interface AttendanceService {
 
     List<Attendance> getStudentAttendanceReport(Long studentId, LocalDate start, LocalDate end);
 
+    List<Attendance> getStudentAttendance(Long studentId);
+
     void bulkMarkAttendance(List<Long> studentIds, LocalDate date, boolean present);
 }

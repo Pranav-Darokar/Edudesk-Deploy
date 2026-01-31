@@ -11,7 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin/exams")
+@RequestMapping("/exams")
 @RequiredArgsConstructor
 public class ExamController {
 
@@ -19,6 +19,11 @@ public class ExamController {
 
     @GetMapping
     public ResponseEntity<List<Exam>> getAllExams() {
+        return ResponseEntity.ok(examService.getAllExams());
+    }
+
+    @GetMapping("/my-exams") // Students can view all exams for now
+    public ResponseEntity<List<Exam>> getMyExams() {
         return ResponseEntity.ok(examService.getAllExams());
     }
 
@@ -33,6 +38,12 @@ public class ExamController {
     public ResponseEntity<Void> deleteExam(@PathVariable Long id) {
         examService.deleteExam(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
+    public ResponseEntity<Exam> updateExam(@PathVariable Long id, @RequestBody Exam exam) {
+        return ResponseEntity.ok(examService.updateExam(id, exam));
     }
 
     @GetMapping("/{examId}/results")

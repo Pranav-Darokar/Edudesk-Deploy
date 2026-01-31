@@ -45,6 +45,11 @@ public class AttendanceServiceImpl implements AttendanceService {
     }
 
     @Override
+    public List<Attendance> getStudentAttendance(Long studentId) {
+        return attendanceRepository.findByStudentId(studentId);
+    }
+
+    @Override
     public void bulkMarkAttendance(List<Long> studentIds, LocalDate date, boolean present) {
         studentIds.forEach(id -> markAttendance(id, date, present, "Bulk marked"));
     }
