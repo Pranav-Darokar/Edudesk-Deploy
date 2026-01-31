@@ -75,7 +75,11 @@ public class ProfileControllerIT {
 
     @Test
     void createProfile_Success() throws Exception {
-        ProfileCreateRequest request = new ProfileCreateRequest("Bio from IT", "1234567890", "Test Address");
+        ProfileCreateRequest request = ProfileCreateRequest.builder()
+                .bio("Bio from IT")
+                .phoneNumber("1234567890")
+                .address("Test Address")
+                .build();
 
         mockMvc.perform(post("/api/profile")
                 .contentType(MediaType.APPLICATION_JSON)

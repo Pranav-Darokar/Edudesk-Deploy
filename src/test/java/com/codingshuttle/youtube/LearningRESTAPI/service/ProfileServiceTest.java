@@ -45,7 +45,11 @@ class ProfileServiceTest {
 
     @Test
     void createProfile_Success() {
-        ProfileCreateRequest request = new ProfileCreateRequest("Bio", "123", "Address");
+        ProfileCreateRequest request = ProfileCreateRequest.builder()
+                .bio("Bio")
+                .phoneNumber("123")
+                .address("Address")
+                .build();
         when(profileRepository.findByUserId(1L)).thenReturn(Optional.empty());
         when(profileRepository.save(any(Profile.class))).thenAnswer(i -> {
             Profile p = i.getArgument(0);
@@ -75,7 +79,9 @@ class ProfileServiceTest {
     @Test
     void updateProfile_Success() {
         Profile profile = Profile.builder().id(10L).user(mockUser).bio("Old Bio").build();
-        ProfileUpdateRequest request = new ProfileUpdateRequest("New Bio", null, null);
+        ProfileUpdateRequest request = ProfileUpdateRequest.builder()
+                .bio("New Bio")
+                .build();
 
         when(profileRepository.findByUserId(1L)).thenReturn(Optional.of(profile));
         when(profileRepository.save(any(Profile.class))).thenAnswer(i -> i.getArgument(0));
