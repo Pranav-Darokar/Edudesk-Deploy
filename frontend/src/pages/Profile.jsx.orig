@@ -121,26 +121,10 @@ const Profile = () => {
                     <div className="h-32 bg-gradient-to-r from-indigo-500 to-purple-600"></div>
                     <div className="px-8 pb-8">
                         <div className="relative flex justify-between items-end -mt-12 mb-6">
-                            <div className="relative group">
-                                <div className="bg-white dark:bg-gray-800 p-2 rounded-full ring-4 ring-white dark:ring-gray-800 shadow-md">
-                                    {profile.profilePhotoUrl ? (
-                                        <img 
-                                            src={profile.profilePhotoUrl} 
-                                            alt="Profile" 
-                                            className="h-24 w-24 rounded-full object-cover"
-                                        />
-                                    ) : (
-                                        <div className="h-24 w-24 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-500">
-                                            <UserCircleIcon className="h-16 w-16" />
-                                        </div>
-                                    )}
+                            <div className="bg-white dark:bg-gray-800 p-2 rounded-full ring-4 ring-white dark:ring-gray-800 shadow-md">
+                                <div className="h-24 w-24 bg-gray-200 rounded-full flex items-center justify-center text-gray-500">
+                                    <UserCircleIcon className="h-16 w-16" />
                                 </div>
-                                {isEditing && (
-                                    <label className="absolute bottom-0 right-0 bg-indigo-600 hover:bg-indigo-700 text-white p-2 rounded-full cursor-pointer shadow-lg transition">
-                                        <CameraIcon className="h-5 w-5" />
-                                        <input type="file" accept="image/*" onChange={handlePhotoChange} className="hidden" />
-                                    </label>
-                                )}
                             </div>
                             {!isEditing && (
                                 <button

@@ -1,14 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { AcademicCapIcon } from '@heroicons/react/24/outline';
+import { AcademicCapIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 
 const Login = () => {
     const { login } = useAuth();
     const navigate = useNavigate();
+    const [showPassword, setShowPassword] = useState(false);
 
     const formik = useFormik({
         initialValues: {
@@ -72,17 +73,31 @@ const Login = () => {
                                 ) : null}
                             </div>
                             <div>
-                                <label htmlFor="password" title="password" className="block text-sm font-semibold text-slate-700 mb-1">Password</label>
-                                <input
-                                    id="password"
-                                    name="password"
-                                    type="password"
-                                    autoComplete="current-password"
-                                    required
-                                    className="block w-full px-4 py-3 rounded-xl border border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all"
-                                    placeholder="••••••••"
-                                    {...formik.getFieldProps('password')}
-                                />
+                                <label htmlFor="password" className="block text-sm font-semibold text-slate-700 mb-1">Password</label>
+                                <div className="relative">
+                                    <input
+                                        id="password"
+                                        name="password"
+                                        type={showPassword ? "text" : "password"}
+                                        autoComplete="current-password"
+                                        required
+                                        className="block w-full px-4 py-3 pr-12 rounded-xl border border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all"
+                                        placeholder="••••••••"
+                                        {...formik.getFieldProps('password')}
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none"
+                                        aria-label={showPassword ? "Hide password" : "Show password"}
+                                    >
+                                        {showPassword ? (
+                                            <EyeSlashIcon className="h-5 w-5" />
+                                        ) : (
+                                            <EyeIcon className="h-5 w-5" />
+                                        )}
+                                    </button>
+                                </div>
                                 {formik.touched.password && formik.errors.password ? (
                                     <div className="text-red-500 text-xs mt-1 font-medium">{formik.errors.password}</div>
                                 ) : null}

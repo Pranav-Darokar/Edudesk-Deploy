@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Logo from './Logo';
@@ -17,12 +17,15 @@ import {
     SunIcon,
     MoonIcon,
     UserCircleIcon,
-    BookOpenIcon
+    BookOpenIcon,
+    Bars3Icon,
+    XMarkIcon
 } from '@heroicons/react/24/outline';
 
 const Layout = ({ children }) => {
     const { logout, user } = useAuth();
     const location = useLocation();
+    const [sidebarOpen, setSidebarOpen] = useState(false);
     const [isDark, setIsDark] = React.useState(() => {
         return localStorage.getItem('theme') === 'dark' ||
             (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
@@ -41,12 +44,12 @@ const Layout = ({ children }) => {
     const navigation = [
         { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
         { name: 'Profile', href: '/profile', icon: UserCircleIcon },
-        { name: 'Students', href: '/students', icon: UserGroupIcon },
-        { name: 'Teachers', href: '/teachers', icon: AcademicCapIcon },
-        { name: 'Courses', href: '/courses', icon: UserIcon },
     ];
 
     if (user?.role === 'ADMIN') {
+        navigation.push({ name: 'Students', href: '/students', icon: UserGroupIcon });
+        navigation.push({ name: 'Teachers', href: '/teachers', icon: AcademicCapIcon });
+        navigation.push({ name: 'Courses', href: '/courses', icon: UserIcon });
         navigation.push({ name: 'Manage Users', href: '/admin/users', icon: ShieldCheckIcon });
         navigation.push({ name: 'Manage Courses', href: '/admin/courses', icon: BookOpenIcon });
         navigation.push({ name: 'Manage Fees', href: '/admin/fees', icon: CurrencyDollarIcon });
@@ -54,17 +57,40 @@ const Layout = ({ children }) => {
         navigation.push({ name: 'Attendance', href: '/admin/attendance', icon: CalendarDaysIcon });
         navigation.push({ name: 'Reports', href: '/admin/reports', icon: ChartPieIcon });
         navigation.push({ name: 'System Settings', href: '/admin/system', icon: Cog6ToothIcon });
-    } else if (user?.role === 'STUDENT') {
+    } else if (user?.role === 'TEACHER') {
+        navigation.push({ name: 'Students', href: '/students', icon: UserGroupIcon });
+        navigation.push({ name: 'Courses', href: '/courses', icon: UserIcon });
         navigation.push({ name: 'My Exams', href: '/my-exams', icon: ClipboardDocumentCheckIcon });
         navigation.push({ name: 'Attendance', href: '/my-attendance', icon: CalendarDaysIcon });
+    } else if (user?.role === 'STUDENT') {
+        navigation.push({ name: 'My Courses', href: '/courses', icon: UserIcon });
+        navigation.push({ name: 'My Exams', href: '/my-exams', icon: ClipboardDocumentCheckIcon });
+        navigation.push({ name: 'My Attendance', href: '/my-attendance', icon: CalendarDaysIcon });
     }
 
     return (
         <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex text-gray-900 dark:text-gray-100">
+            {/* Mobile Overlay */}
+            {sidebarOpen && (
+                <div
+                    className="fixed inset-0 bg-black/50 z-20 lg:hidden"
+                    onClick={() => setSidebarOpen(false)}
+                />
+            )}
+
             {/* Sidebar */}
-            <div className="fixed inset-y-0 left-0 bg-white dark:bg-gray-800 w-64 shadow-lg z-10 flex flex-col transition-colors duration-200">
-                <div className="flex items-center justify-center h-16 border-b border-gray-200 dark:border-gray-700">
+            <div className={`fixed inset-y-0 left-0 bg-white dark:bg-gray-800 w-64 shadow-lg z-30 flex flex-col transition-all duration-300 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+                } lg:translate-x-0`}>
+                <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200 dark:border-gray-700">
                     <Logo className="w-8 h-8" />
+                    {/* Close button for mobile */}
+                    <button
+                        onClick={() => setSidebarOpen(false)}
+                        className="lg:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                        aria-label="Close sidebar"
+                    >
+                        <XMarkIcon className="h-6 w-6" />
+                    </button>
                 </div>
                 <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
                     {navigation.map((item) => {
@@ -73,6 +99,7 @@ const Layout = ({ children }) => {
                             <Link
                                 key={item.name}
                                 to={item.href}
+                                onClick={() => setSidebarOpen(false)}
                                 className={`flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-150 ${isActive
                                     ? 'bg-indigo-50 dark:bg-indigo-900/40 text-primary dark:text-indigo-300'
                                     : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:text-gray-900 dark:hover:text-gray-100'
@@ -96,11 +123,21 @@ const Layout = ({ children }) => {
             </div>
 
             {/* Main Content */}
-            <div className="flex-1 ml-64 flex flex-col min-h-screen">
-                <header className="bg-white dark:bg-gray-800 shadow-sm h-16 flex items-center justify-between px-8 transition-colors duration-200 border-b border-gray-100 dark:border-gray-700">
-                    <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
-                        {navigation.find(n => location.pathname.startsWith(n.href))?.name || 'Dashboard'}
-                    </h2>
+            <div className="flex-1 lg:ml-64 flex flex-col min-h-screen">
+                <header className="bg-white dark:bg-gray-800 shadow-sm h-16 flex items-center justify-between px-4 lg:px-8 transition-colors duration-200 border-b border-gray-100 dark:border-gray-700">
+                    <div className="flex items-center space-x-4">
+                        {/* Hamburger Menu Button */}
+                        <button
+                            onClick={() => setSidebarOpen(true)}
+                            className="lg:hidden p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                            aria-label="Open sidebar"
+                        >
+                            <Bars3Icon className="h-6 w-6" />
+                        </button>
+                        <h2 className="text-lg lg:text-xl font-semibold text-gray-800 dark:text-gray-100">
+                            {navigation.find(n => location.pathname.startsWith(n.href))?.name || 'Dashboard'}
+                        </h2>
+                    </div>
                     <div className="flex items-center space-x-6">
                         {/* Theme Toggle */}
                         <button

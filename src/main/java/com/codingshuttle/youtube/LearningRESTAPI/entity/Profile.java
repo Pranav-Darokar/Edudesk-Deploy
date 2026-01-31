@@ -26,4 +26,8 @@ public class Profile {
     private String bio;
     private String phoneNumber;
     private String address;
+    private java.time.LocalDate dob;
+
+    @Column(columnDefinition = "TEXT")
+    private String profilePhotoUrl;
 }

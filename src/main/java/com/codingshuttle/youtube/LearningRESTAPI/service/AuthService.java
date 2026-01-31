@@ -16,6 +16,8 @@ import com.codingshuttle.youtube.LearningRESTAPI.repository.StudentRepository;
 import com.codingshuttle.youtube.LearningRESTAPI.repository.TeacherRepository;
 import com.codingshuttle.youtube.LearningRESTAPI.repository.VerificationOTPRepository;
 import com.codingshuttle.youtube.LearningRESTAPI.entity.VerificationOTP;
+import com.codingshuttle.youtube.LearningRESTAPI.entity.Profile;
+import com.codingshuttle.youtube.LearningRESTAPI.repository.ProfileRepository;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -40,6 +42,7 @@ public class AuthService {
         private final VerificationOTPRepository otpRepository;
         private final StudentRepository studentRepository;
         private final TeacherRepository teacherRepository;
+        private final ProfileRepository profileRepository;
 
         public AuthResponse signup(SignupRequest request) {
                 log.info("Starting signup for email: {}", request.getEmail());
@@ -98,6 +101,21 @@ public class AuthService {
                         student.setName(savedUser.getName());
                         student.setEmail(savedUser.getEmail());
                         studentRepository.save(student);
+                }
+
+                // Automatically create profile with signup data
+                try {
+                        Profile profile = Profile.builder()
+                                        .user(savedUser)
+                                        .bio("Welcome to EduDesk! Update your bio to tell us about yourself.")
+                                        .phoneNumber(savedUser.getPhoneNumber())
+                                        .address(savedUser.getAddress())
+                                        .dob(savedUser.getDob())
+                                        .build();
+                        profileRepository.save(profile);
+                        log.info("Profile automatically created for user: {}", savedUser.getEmail());
+                } catch (Exception e) {
+                        log.error("Failed to create profile for user {}: {}", savedUser.getEmail(), e.getMessage());
                 }
 
                 log.info("User saved with id: {}. Instant registration complete.", savedUser.getId());

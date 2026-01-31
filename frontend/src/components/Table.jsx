@@ -1,7 +1,7 @@
 import React from 'react';
-import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { PencilIcon, TrashIcon, InboxIcon } from '@heroicons/react/24/outline';
 
-const Table = ({ columns, data, onEdit, onDelete, renderActions, actions = true, showDelete = true, showEdit = true }) => {
+const Table = ({ columns, data, onEdit, onDelete, renderActions, actions = true, showDelete = true, showEdit = true, emptyMessage = "No data available", emptySubtext }) => {
     return (
         <div className="overflow-x-auto rounded-lg shadow ring-1 ring-black ring-opacity-5">
             <table className="min-w-full divide-y divide-gray-300">
@@ -26,8 +26,16 @@ const Table = ({ columns, data, onEdit, onDelete, renderActions, actions = true,
                 <tbody className="divide-y divide-gray-200 bg-white">
                     {data.length === 0 ? (
                         <tr>
-                            <td colSpan={columns.length + (actions ? 1 : 0)} className="py-4 text-center text-sm text-gray-500">
-                                No data available
+                            <td colSpan={columns.length + (actions ? 1 : 0)} className="py-12 text-center">
+                                <div className="flex flex-col items-center justify-center space-y-3">
+                                    <InboxIcon className="h-12 w-12 text-gray-300 dark:text-gray-600" />
+                                    <div>
+                                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{emptyMessage}</p>
+                                        {emptySubtext && (
+                                            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{emptySubtext}</p>
+                                        )}
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                     ) : (

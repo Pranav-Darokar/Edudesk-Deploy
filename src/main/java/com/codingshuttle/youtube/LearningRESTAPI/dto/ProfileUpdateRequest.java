@@ -13,4 +13,6 @@ public class ProfileUpdateRequest {
     private String bio;
     private String phoneNumber;
     private String address;
+    private java.time.LocalDate dob;
+    private String profilePhotoUrl;
 }

@@ -8,8 +8,10 @@ import com.codingshuttle.youtube.LearningRESTAPI.entity.User;
 import com.codingshuttle.youtube.LearningRESTAPI.repository.ProfileRepository;
 import com.codingshuttle.youtube.LearningRESTAPI.service.ProfileService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProfileServiceImpl implements ProfileService {
@@ -26,15 +28,22 @@ public class ProfileServiceImpl implements ProfileService {
                 .bio(request.getBio())
                 .phoneNumber(request.getPhoneNumber())
                 .address(request.getAddress())
+                .dob(request.getDob())
+                .profilePhotoUrl(request.getProfilePhotoUrl())
                 .build();
         return mapToDto(profileRepository.save(profile));
     }
 
     @Override
     public ProfileDto getProfile(User user) {
-        return profileRepository.findByUserId(user.getId())
-                .map(this::mapToDto)
-                .orElseThrow(() -> new RuntimeException("Profile not found"));
+        log.info("Getting profile for user ID: {} (email: {})", user.getId(), user.getEmail());
+        var profileOpt = profileRepository.findByUserId(user.getId());
+        if (profileOpt.isEmpty()) {
+            log.warn("Profile not found for user ID: {}", user.getId());
+        } else {
+            log.info("Profile found for user ID: {}", user.getId());
+        }
+        return profileOpt.map(this::mapToDto).orElse(null);
     }
 
     @Override
@@ -48,6 +57,10 @@ public class ProfileServiceImpl implements ProfileService {
             profile.setPhoneNumber(request.getPhoneNumber());
         if (request.getAddress() != null)
             profile.setAddress(request.getAddress());
+        if (request.getDob() != null)
+            profile.setDob(request.getDob());
+        if (request.getProfilePhotoUrl() != null)
+            profile.setProfilePhotoUrl(request.getProfilePhotoUrl());
 
         return mapToDto(profileRepository.save(profile));
     }
@@ -62,6 +75,8 @@ public class ProfileServiceImpl implements ProfileService {
                 .bio(profile.getBio())
                 .phoneNumber(profile.getPhoneNumber())
                 .address(profile.getAddress())
+                .dob(profile.getDob())
+                .profilePhotoUrl(profile.getProfilePhotoUrl())
                 .build();
     }
 }

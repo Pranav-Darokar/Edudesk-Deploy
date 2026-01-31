@@ -129,6 +129,8 @@ const AdminFees = () => {
                         data={structures}
                         onEdit={handleEditStructure}
                         onDelete={(structure) => handleDeleteStructure(structure.id)}
+                        emptyMessage="No fee structures defined yet"
+                        emptySubtext="Click 'Add Structure' to create your first fee structure"
                     />
                 </div>
 
@@ -140,6 +142,8 @@ const AdminFees = () => {
                         actions={true}
                         showEdit={false}
                         onDelete={(payment) => handleDeletePayment(payment.id)}
+                        emptyMessage="No fee payments recorded yet"
+                        emptySubtext="Once students pay their fees, payment records will appear here"
                     />
                 </div>
             </div>
